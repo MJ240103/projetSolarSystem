@@ -1,6 +1,6 @@
 import pygame
 import sys
-from planet import Planet
+from planetV3 import Planet
 
 # Initialisation de Pygame
 pygame.init()
@@ -51,15 +51,6 @@ dt = 7.2e4  # correspond à environ 1 jour (86400 secondes approximées à moins
 echelleDistances = SCREEN_HEIGHT * 2.0e-12 # défaut
 echelleRayonSoleil = SCREEN_HEIGHT * 3.0e-11 # défaut
 echelleRayonsPlanete = SCREEN_HEIGHT * 1*1.0e-6 # défaut
-#echelleDistances = SCREEN_HEIGHT * 1.0e-12
-#echelleRayonSoleil = SCREEN_HEIGHT * 3.0e-11
-#echelleRayonsPlanete = SCREEN_HEIGHT * 5.0e-9
-#echelleDistances = SCREEN_HEIGHT * 1.0e-14
-#echelleRayonSoleil = SCREEN_HEIGHT * 5.0e-10
-#echelleRayonsPlanete = SCREEN_HEIGHT * 2.0e-9
-#echelleDistances = SCREEN_HEIGHT * 1.0e-11  # Augmenter légèrement l'échelle pour les planètes éloignées
-#echelleRayonSoleil = SCREEN_HEIGHT * 5.0e-10  # Augmenter aussi la taille du Soleil
-#echelleRayonsPlanete = SCREEN_HEIGHT * 3.0e-9  # Augmenter la taille des planètes
 
 facteurDistance = 5.0e11  # Facteur d'échelle des distances
 facteurRayon = 1.0e8  # Facteur d'échelle des rayons
@@ -183,11 +174,14 @@ while running:
 
     # Création du Soleil
     pygame.draw.circle(window, YELLOW, sun_position, int(rayonSoleil * echelleRayonSoleil))
-
-    # Mise à jour des planètes
+    
+    # Mise à jour des planètes avec Runge-Kutta
     for planet in solarSystem:
-        planet.applyGravity(masseSoleil, sun_position, G)
-        planet.setPosition(dt)
+        # Vérifier si la planète est recouverte par le Soleil
+        planet.selfVanish(solarSystem, sun_position, rayonSoleil)
+        
+        autres_planetes = [p for p in solarSystem if p != planet]  # Liste des autres planètes
+        planet.runge_kutta_step(autres_planetes, G, dt)
         planet.selfDraw(window, echelleDistances, echelleRayonsPlanete, sun_position, SCREEN_WIDTH, SCREEN_HEIGHT, lambda x,y : realToDisplay(x,y,SCREEN_WIDTH,SCREEN_HEIGHT,1e13,1e13))
     
     # Dessiner la croix au centre
