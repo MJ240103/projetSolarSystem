@@ -1,6 +1,7 @@
 import pygame
 import sys
 from planetV3 import Planet
+from planetV3 import runge_kutta
 
 # Initialisation de Pygame
 pygame.init()
@@ -176,13 +177,11 @@ while running:
     pygame.draw.circle(window, YELLOW, sun_position, int(rayonSoleil * echelleRayonSoleil))
     
     # Mise à jour des planètes avec Runge-Kutta
+    runge_kutta(solarSystem, G, dt)
     for planet in solarSystem:
-        # Vérifier si la planète est recouverte par le Soleil
         planet.selfVanish(solarSystem, sun_position, rayonSoleil)
-        
-        autres_planetes = [p for p in solarSystem if p != planet]  # Liste des autres planètes
-        planet.runge_kutta_step(autres_planetes, G, dt)
         planet.selfDraw(window, echelleDistances, echelleRayonsPlanete, sun_position, SCREEN_WIDTH, SCREEN_HEIGHT, lambda x,y : realToDisplay(x,y,SCREEN_WIDTH,SCREEN_HEIGHT,1e13,1e13))
+        #print(planet.position, planet.vitesse)
     
     # Dessiner la croix au centre
     draw_centered_cross(window, center_x, center_y, cross_length, CROSS_COLOR)
@@ -191,7 +190,7 @@ while running:
     pygame.display.update()
 
     # Vitesse d'exécution
-    pygame.time.delay(30)
+    pygame.time.delay(10)
 
 # Fermeture de PyGame à la fin de l'execution
 pygame.quit()
