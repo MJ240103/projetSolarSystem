@@ -1,5 +1,6 @@
 import math
 import pygame
+import copy
 
 class Planet:
     def __init__(self, nom, masse, rayon, position, vitesse, acceleration, couleur):
@@ -14,58 +15,19 @@ class Planet:
     def gravite(self, autres_planetes, G):
         """Calcule l'accélération en fonction des autres planètes et du Soleil."""
         ax, ay = 0, 0
+        #print("GRAVITE")
         for autre_planete in autres_planetes:
             if autre_planete != self:
                 dx = autre_planete.position[0] - self.position[0]
                 dy = autre_planete.position[1] - self.position[1]
-                print(dx, dy)
+                if dx > 1e140: print(dx, dy)
                 distance = math.sqrt(dx**2 + dy**2)
-                force = G * autre_planete.masse / distance**2
-                ax += force * dx / distance
-                ay += force * dy / distance
+                if dx > 1e140: print(distance)
+                force = -G * autre_planete.masse / distance**2
+                ax += force * (dx / distance)
+                ay += force * (dy / distance)
         return ax, ay
-
-    def runge_kutta_step(self, autres_planetes, G, dt):
-        """Exécute une étape de Runge-Kutta 4 pour mettre à jour la position et la vitesse. Remplace setPosition"""
         
-        # k1 pour la position et la vitesse
-        k1_vx, k1_vy = self.acceleration
-        k1_px, k1_py = self.vitesse
-        
-        # Appliquer la gravité pour k1
-        ax1, ay1 = self.gravite(autres_planetes, G)
-
-        # k2
-        vx2 = self.vitesse[0] + 0.5 * dt * ax1
-        vy2 = self.vitesse[1] + 0.5 * dt * ay1
-        px2 = self.position[0] + 0.5 * dt * k1_px
-        py2 = self.position[1] + 0.5 * dt * k1_py
-        
-        ax2, ay2 = self.gravite(autres_planetes, G)
-
-        # k3
-        vx3 = self.vitesse[0] + 0.5 * dt * ax2
-        vy3 = self.vitesse[1] + 0.5 * dt * ay2
-        px3 = self.position[0] + 0.5 * dt * k1_px
-        py3 = self.position[1] + 0.5 * dt * k1_py
-
-        ax3, ay3 = self.gravite(autres_planetes, G)
-
-        # k4
-        vx4 = self.vitesse[0] + dt * ax3
-        vy4 = self.vitesse[1] + dt * ay3
-        px4 = self.position[0] + dt * k1_px
-        py4 = self.position[1] + dt * k1_py
-        
-        ax4, ay4 = self.gravite(autres_planetes, G)
-
-        # Mise à jour finale
-        self.vitesse[0] += (dt / 6) * (ax1 + 2*ax2 + 2*ax3 + ax4)
-        self.vitesse[1] += (dt / 6) * (ay1 + 2*ay2 + 2*ay3 + ay4)
-        
-        self.position[0] += (dt / 6) * (k1_px + 2*px2 + 2*px3 + px4)
-        self.position[1] += (dt / 6) * (k1_py + 2*py2 + 2*py3 + py4)
-    
     def selfVanish(self, solarSystem, position_soleil, rayon_soleil):
         """Supprime la planète si elle est recouverte par le Soleil."""
         dx = self.position[0] - position_soleil[0]
@@ -87,3 +49,55 @@ class Planet:
         
         # Ne dessiner que si la planète est dans la fenêtre
         pygame.draw.circle(window, self.couleur, (x_affiche, y_affiche), rayon)
+
+
+def runge_kutta(planetes, G, dt):
+    k1v = []
+    k1x = []
+    k2v = []
+    k2x = []
+    k3v = []
+    k3x = []
+    k4v = []
+    k4x = []
+    acc = {}
+
+    #Etape 1
+    for planete in planetes: acc[planete] = planete.gravite(planetes, G)
+    clone_planetes = [copy.copy(p) for p in planetes]
+    for planete in planetes:
+        k1v.append(acc[planete])
+        k1x.append(planete.vitesse)
+
+    #Etape 2
+    for i, planete in enumerate(planetes):
+        clone_planetes[i].vitesse += (k1v[i][0] * dt / 2, k1v[i][1] * dt / 2)
+        clone_planetes[i].position += (k1x[i][0] * dt / 2, k1x[i][1] * dt / 2)
+
+        acc[planete] = planete.gravite(planetes, G)
+        k2v.append(acc[planete])
+        k2x.append(clone_planetes[i].vitesse)
+
+    #Etape 3
+    for i, planete in enumerate(planetes):
+        clone_planetes[i].vitesse += (k2v[i][0] * dt / 2, k2v[i][1] * dt / 2)
+        clone_planetes[i].position += (k2x[i][0] * dt / 2, k2x[i][1] * dt / 2)
+
+        acc[planete] = planete.gravite(planetes, G)
+        k3v.append(acc[planete])
+        k3x.append(clone_planetes[i].vitesse)
+
+    for i, planete in enumerate(planetes):
+        clone_planetes[i].vitesse += (k3v[i][0] * dt / 2, k3v[i][1] * dt / 2)
+        clone_planetes[i].position += (k3x[i][0] * dt / 2, k3x[i][1] * dt / 2)
+
+        acc[planete] = planete.gravite(planetes, G)
+        k4v.append(acc[planete])
+        k4x.append(clone_planetes[i].vitesse)
+
+    
+    for i, planete in enumerate(planetes):
+        planete.vitesse += ((k1v[i][0] + 2 * k2v[i][0] + 2 * k3v[i][0] + k4v[i][0]) * dt / 6, (k1v[i][1] + 2 * k2v[i][1] + 2 * k3v[i][1] + k4v[i][1]) * dt / 6)
+        planete.position += ((k1x[i][0] + 2 * k2x[i][0] + 2 * k3x[i][0] + k4x[i][0]) * dt / 6, (k1x[i][1] + 2 * k2x[i][1] + 2 * k3x[i][1] + k4x[i][1]) * dt / 6)
+        
+        
