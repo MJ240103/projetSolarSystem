@@ -198,9 +198,8 @@ running = True
 #paused = False  # Variable pour suivre l'état de pause
 # Variable pour contrôler l'affichage des trajectoires
 show_orbits = False
-# Variable qui lorsqu'elle vaut true rempli à chaque itération l'écrand de fond
-bClearScreen = True
 
+window.fill(BLACK)
 while running:
     ScanKeyboard()
     # Gestion des événements
@@ -240,16 +239,16 @@ while running:
 
     # Mise à jour des planètes avec Runge-Kutta
     #if not paused:
-    runge_kutta(solarSystem, G, dt)
+    #runge_kutta(solarSystem, G, dt)
 
     for planet in solarSystem:
         planet.selfVanish(solarSystem, soleil.position, soleil.rayon)
         planet.selfDraw(window, echelleDistances, echelleRayonsPlanete, soleil.position, SCREEN_WIDTH, SCREEN_HEIGHT, lambda x, y: realToDisplay(x, y, SCREEN_WIDTH, SCREEN_HEIGHT, 1e13 * zoom, 1e13 * zoom))
     
-    pygame.display.flip()
-    
     # Dessiner la croix au centre
     draw_centered_cross(window, center_x, center_y, cross_length, CROSS_COLOR)
+
+    pygame.display.flip()
     
     # Afficher le bouton pause
     #pause_bouton.draw(window) 
