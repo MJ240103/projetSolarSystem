@@ -1,5 +1,5 @@
 from bodies import Planet
-
+from random import *
 ### CONSTANTES ###
 
 BLACK = (0, 0, 0)
@@ -12,17 +12,17 @@ ORANGE = (255, 165, 50)
 PURPLE = (148, 0, 211)
 GREY = (128, 128, 128)
 
-FPS = 60
+FPS = 120
 
 # Constantes astronomiques
 G = -6.67384e-11
 
 # Intervalle de temps (en secondes)
 dt = 7.2e4  # correspond à environ 1 jour (86400 secondes approximées à moins car simulation trop lente sinon)
-SPACE_X = 1e13
-SPACE_Y = 1e13
+SPACE_X = 1e5
+SPACE_Y = 1e5
 UNIVERSE_CENTER = (SPACE_X//2,SPACE_Y//2)
-ECHELLE_RAYON = 600
+ECHELLE_RAYON = 1
 
 
 ### PLANETES ###
@@ -45,104 +45,13 @@ solarSystem.append(Planet(
 # Création des planètes
     # Mercure
 
-solarSystem.append(Planet(
-    nom="Mercure",
-    masse=3.3011e23,  
-    rayon=2.4397e6,  
-    position=[57.9e9, 0],  
-    vitesse=[0, 47.87e3],  
+for i in range(0,10):
+    solarSystem.append(Planet(
+    nom="Planete{}".format(str(i)),
+    masse=randint(1e3,1e5),  
+    rayon=randint(SPACE_X//100,SPACE_X//50),  
+    position=[uniform(SPACE_X/4,3*SPACE_X/4) - SPACE_X//2, uniform(SPACE_Y/4,3*SPACE_Y/4) - SPACE_Y//2],  
+    vitesse=[0,0],  
     acceleration=[0, 0],
-    couleur=WHITE
-))
-
-    # Vénus
-
-solarSystem.append(Planet(
-    nom="Vénus",
-    masse=4.8675e24,
-    rayon=6.0518e6,
-    position=[108.2e9, 0],
-    vitesse=[-0.3e3, 35.02e3],
-    acceleration=[0, 0], 
-    couleur=PURPLE
-))
-
-# Terre
-
-solarSystem.append(Planet(
-    nom="Terre",
-    masse=5.972e24,
-    rayon=6.371e6,
-    position=[149.5e9, 0],
-    vitesse=[-0.2e3, 29.8e3],
-    acceleration=[0, 0],
-    couleur=BLUE
-))
-
-# Mars
-solarSystem.append(Planet(
-    nom="Mars",
-    masse=6.4171e23,
-    rayon=3.39e6,
-    position=[227.9e9, 0],
-    vitesse=[-0.15e3, 24.077e3],
-    acceleration=[0, 0],
-    couleur=RED
-))
-
-# Jupiter
-solarSystem.append(Planet(
-    nom="Jupiter",
-    masse=1.8982e27,
-    rayon=6.9911e7,
-    position=[778.5e9, 0],
-    vitesse=[-0.1e3, 13.07e3],
-    acceleration=[0, 0],
-    couleur=ORANGE
-))
-
-# Saturne
-solarSystem.append(Planet(
-    nom="Saturne",
-    masse=5.6834e26,
-    rayon=5.8232e7,
-    position=[1.429e12, 0],
-    vitesse=[-0.08e3, 9.68e3],
-    acceleration=[0, 0],
-    couleur=GREEN
-))
-
-# Uranus
-solarSystem.append(Planet(
-    nom="Uranus",
-    masse=8.6810e25,
-    rayon=2.5362e7,
-    position=[2.871e12, 0],
-    vitesse=[-0.05e3, 6.80e3],
-    acceleration=[0, 0],
-    couleur=BLUE
-))
-
-# Neptune
-
-solarSystem.append(Planet(
-    nom="Neptune",
-    masse=1.02413e26,
-    rayon=2.4622e7,
-    position=[4.495e12, 0],
-    vitesse=[-0.03e3, 5.43e3],
-    acceleration=[0, 0],
-    couleur=WHITE
-))
-
-# Soleil
-solarSystem.append(Planet(
-    nom="Soleil",
-    masse=1.989e30,
-    rayon=6.955e8,
-    position=[0,0],
-    vitesse=[0, 0],
-    acceleration=[0, 0],
-    couleur=YELLOW
-))
-
+    couleur=(randint(0,255),randint(0,255),randint(0,255))
+    ))

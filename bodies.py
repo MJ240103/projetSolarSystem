@@ -44,7 +44,7 @@ class Planet:
         x_affiche,y_affiche = convertFun(centrage[0] + self.position[0], centrage[1] + self.position[1])
         #x_affiche,y_affiche = centrage[0] + x_affiche, centrage[1] + y_affiche
         
-        print(x_affiche,y_affiche, centrage)
+        #print(x_affiche,y_affiche, centrage)
         #realToDisplay(x,y,1000,1000,1e13,1e13)
         
         # Ne dessiner que si la planète est dans la fenêtre

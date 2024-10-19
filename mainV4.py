@@ -102,7 +102,7 @@ while running:
     #print(solarSystem[0].position)
     for planet in solarSystem:
         #planet.selfVanish(solarSystem, soleil.position, soleil.rayon)
-        
+        #print(planet.nom, planet.position)
         planet.selfDraw(window, ECHELLE_RAYON, UNIVERSE_CENTER, SCREEN_WIDTH, SCREEN_HEIGHT, lambda x, y: realToDisplay(x, y, SCREEN_WIDTH, SCREEN_HEIGHT, SPACE_X * zoom, SPACE_Y* zoom))
     
     # Dessiner la croix au centre
